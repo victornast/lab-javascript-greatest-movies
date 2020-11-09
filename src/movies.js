@@ -2,7 +2,11 @@
 // _Bonus_: It seems some of the directors had directed multiple movies so they will pop up multiple times in the array of directors. How could you "clean" a bit this array and make it unified (without duplicates)?
 
 function getAllDirectors(movies) {
-  return movies.map((value) => value.director);
+  return movies
+    .map((value) => value.director)
+    .filter(
+      (element, index, thisArray) => thisArray.indexOf(element) === index
+    );
 }
 
 // Iteration 2: Steven Spielberg. The best? - How many drama movies did STEVEN SPIELBERG direct?
@@ -77,4 +81,49 @@ function orderAlphabetically(movies) {
 
 // BONUS - Iteration 7: Time Format - Turn duration of the movies from hours to minutes
 
+function turnHoursToMinutes(movies) {
+  let lengthInMinutes = JSON.parse(JSON.stringify(movies));
+  for (element of lengthInMinutes) {
+    if (element.duration.split(' ').length === 2) {
+      element.duration =
+        parseInt(element.duration.split(' ')[0]) * 60 +
+        parseInt(element.duration.split(' ')[1]);
+    } else {
+      if (element.duration[element.duration.length - 1] === 'h') {
+        element.duration = parseInt(element.duration) * 60;
+      } else {
+        element.duration = parseInt(element.duration);
+      }
+    }
+  }
+  return lengthInMinutes;
+}
+
 // BONUS - Iteration 8: Best yearly rate average - Best yearly rate average
+
+function bestYearAvg(movies) {
+  if (movies.length === 0) return null;
+  let allYears = movies
+    .map((value) => value.year)
+    .filter((ele, ind, ara) => ara.indexOf(ele) === ind);
+  allYears.sort((a, b) => a - b);
+  console.log(allYears);
+  let allYearsRates = [];
+
+  for (let i = 0; i < allYears.length; i++) {
+    let thisYearsMovies = movies.filter((ele) => ele.year === allYears[i]);
+    let thisYearsRates = [];
+    for (movie of thisYearsMovies) {
+      thisYearsRates.push(movie.rate);
+    }
+    thisYearsRates = thisYearsRates.reduce(
+      (avg, ele, i, array) => avg + ele / array.length,
+      0
+    );
+    allYearsRates.push(thisYearsRates);
+  }
+  let highestRate = Math.max(...allYearsRates);
+  let bestMovieYear = allYears[allYearsRates.indexOf(highestRate)];
+
+  return `The best year was ${bestMovieYear} with an average rate of ${highestRate}`;
+}
